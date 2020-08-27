@@ -11,4 +11,5 @@ class Classe extends Model
     public function niveau_cycle(){
         return $this->hasMany('App\ClasseNiveauCycle');
     }
+
 }

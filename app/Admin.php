@@ -15,9 +15,7 @@ class Admin extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = [
-        'nom','prenom','username', 'password','profil_id'
-    ];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -36,6 +34,19 @@ class Admin extends Authenticatable
     // protected $casts = [
     //     'email_verified_at' => 'datetime',
     // ];
+
+    private $statut = [
+        0 => "Inactif",
+        1 => "Actif",
+    ];
+    
+    public function statut(){
+        return $this->statut;
+    }
+
+    public function getStatutAttribute($attribute){
+        return $this->statut[$attribute];
+    }
 
     public function profil(){
         return $this->belongsTo('App\Profil');

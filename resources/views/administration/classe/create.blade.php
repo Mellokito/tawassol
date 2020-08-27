@@ -46,7 +46,7 @@
                             <div class="m-portlet__head-caption">
                                 <div class="m-portlet__head-title">
                                     <h3 class="m-portlet__head-text">
-                                        Nouvelle classe
+                                        Nouvelle classe du cycle scolaire &nbsp;<strong>{{ \Carbon\Carbon::parse($cycle_scolaire->date_debut)->format('Y') }} - {{ \Carbon\Carbon::parse($cycle_scolaire->date_fin)->format('Y') }}</strong> 
                                     </h3>
                                 </div>
                             </div>
@@ -108,7 +108,94 @@
             <!--end::Portlet-->
         </div>
     </div>
+
+    {{-- Ajouter à partir d'un autre cycle --}}
+    <div class="row mt-4 mb-6">
+        <div class="col-lg-12">
+            
+            <!--begin::Portlet-->
+            <div class="m-portlet m-portlet--last m-portlet--head-lg m-portlet--responsive-mobile" id="main_portlet">
+                    <div class="m-portlet__head">
+                        <div class="m-portlet__head-progress">
+
+                            <!-- here can place a progress bar-->
+                        </div>
+                        <div class="m-portlet__head-wrapper">
+                            <div class="m-portlet__head-caption">
+                                <div class="m-portlet__head-title">
+                                    <h3 class="m-portlet__head-text">
+                                        Importer des classes depuis un autre cycle
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-portlet__body">
+                        
+                        <!--begin: Datatable -->
+                        <table class="table table-striped- table-bordered table-hover table-checkable" id="list_items" >
+                            <thead>
+                                <th>Nom</th>
+                                <th>Date début</th>
+                                <th>Date fin</th>
+                            </thead>
+                            <tbody>
+                                @foreach ($cycle_scolaires as $cycle)
+                                @if (!$cycle->classe->isEmpty())
+                                    <tr>
+                                        <td>
+                                            <a class="m-link" href="{{ route('cycle.classe.classe_cycle.index',[$cycle_scolaire,$cycle]) }}">
+                                                {{ \Carbon\Carbon::parse($cycle->date_debut)->format('Y') }} - {{ \Carbon\Carbon::parse($cycle->date_fin)->format('Y') }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ $cycle->date_debut }}
+                                        </td>
+                                        <td>
+                                            {{ $cycle->date_fin }}
+                                        </td>
+                                    </tr>
+                                @endif
+                                @endforeach
+            
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+            <!--end::Portlet-->
+        </div>
+    </div>
 </div>
+
+@section('datatable')
+<script>
+		$("#list_items").dataTable({
+			"order": [
+				[1, "desc"]
+			],
+			"language": {
+					"sProcessing": "Traitement en cours ...",
+					"sLengthMenu": "Afficher _MENU_ lignes",
+					"sZeroRecords": "Aucun résultat trouvé",
+					"sEmptyTable": "Aucune donnée disponible",
+					"sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+					"sInfoEmpty": "Aucune ligne affichée",
+					"sInfoFiltered": "(Filtrer un maximum de_MAX_)",
+					"sInfoPostFix": "",
+					"sSearch": "Chercher:",
+					"sUrl": "",
+					"sInfoThousands": ",",
+					"sLoadingRecords": "Chargement...",
+					"oPaginate": {
+						"sFirst": "<<", "sLast": ">>", "sNext": ">", "sPrevious": "<"
+					},
+					"oAria": {
+						"sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+					}
+					}
+			});
+	</script>
+@endsection
 
 <script>
     var li  = document.getElementById('classe');

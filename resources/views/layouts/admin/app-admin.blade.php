@@ -118,14 +118,6 @@
 						</ul>
 					</div>
 				</li>
-			
-
-				{{-- Changer mot de passe --}}
-
-				<li class="m-menu__section ">
-					<h4 class="m-menu__section-text">Utilisateur</h4>
-					<i class="m-menu__section-icon flaticon-more-v2"></i>
-				</li>
 
 
 				<li id="prof" class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">
@@ -162,26 +154,63 @@
 					</div>
 				</li>
 
-				<li id="compte" class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">
-					<a href="javascript:;" class="m-menu__link m-menu__toggle">
-						<i class="m-menu__link-icon flaticon-user-ok"></i>
-						<span class="m-menu__link-text  menuu">Compte</span>
-						<i class="m-menu__ver-arrow la la-angle-right"></i>
-					</a>
-					<div class="m-menu__submenu "> 
-						<span class="m-menu__arrow"></span>
-						<ul class="m-menu__subnav">
-							<li id="change_password" class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">
-								<a href="" class="m-menu__link m-menu__toggle">
-									<i class="m-menu__link-bullet m-menu__link-bullet--dot"><span></span></i>
-									<span class="m-menu__link-text">Changer mot de passe</span>
-									<i class=""></i>
-								</a>
-							</li>
-						</ul>
-					</div>
 
-				</li>
+				@if(Auth::user()->profil->id == 1)
+					<li class="m-menu__section ">
+						<h4 class="m-menu__section-text">Administration</h4>
+						<i class="m-menu__section-icon flaticon-more-v2"></i>
+					</li>
+
+
+					<li id="utilisateur" class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">
+						<a href="javascript:;" class="m-menu__link m-menu__toggle">
+							<i class="m-menu__link-icon flaticon-user-ok"></i>
+							<span class="m-menu__link-text  menuu">Utilisateurs</span>
+							<i class="m-menu__ver-arrow la la-angle-right"></i>
+						</a>
+						<div class="m-menu__submenu "> 
+							<span class="m-menu__arrow"></span>
+							<ul class="m-menu__subnav">
+								<li id="index_utilisateur" class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">
+									<a href="{{ route('utilisateur.index') }}" class="m-menu__link m-menu__toggle">
+										<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+										<span></span></i>
+										<span class="m-menu__link-text">Liste utilisateurs</span><i class=""></i>
+									</a>
+								</li>
+								<li id="create_utilisateur" class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">
+									<a href="{{ route('utilisateur.create') }}" class="m-menu__link m-menu__toggle">
+										<i class="m-menu__link-bullet m-menu__link-bullet--dot"><span></span></i>
+										<span class="m-menu__link-text">Ajouter utilisateur</span>
+										<i class=""></i>
+									</a>
+								</li>
+							</ul>
+						</div>
+
+					</li>
+					@endif
+
+					<li id="compte" class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">
+						<a href="javascript:;" class="m-menu__link m-menu__toggle">
+							<i class="m-menu__link-icon flaticon-user-ok"></i>
+							<span class="m-menu__link-text  menuu">Compte</span>
+							<i class="m-menu__ver-arrow la la-angle-right"></i>
+						</a>
+						<div class="m-menu__submenu "> 
+							<span class="m-menu__arrow"></span>
+							<ul class="m-menu__subnav">
+								<li id="change_password" class="m-menu__item  m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">
+									<a href="" class="m-menu__link m-menu__toggle">
+										<i class="m-menu__link-bullet m-menu__link-bullet--dot"><span></span></i>
+										<span class="m-menu__link-text">Changer mot de passe</span>
+										<i class=""></i>
+									</a>
+								</li>
+							</ul>
+						</div>
+	
+					</li>
 
 
 

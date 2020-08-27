@@ -17,6 +17,7 @@ class ClasseController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('statutUser');
     }
     /**
      * Display a listing of the resource.
@@ -45,6 +46,7 @@ class ClasseController extends Controller
     {
         $data['cycle_scolaire'] = $cycle_scolaire;
         $data['niveau_scolaires'] = NiveauScolaire::all();
+        $data['cycle_scolaires'] = CycleScolaire::where('id','!=',$cycle_scolaire->id)->get();
         $data['categorie_niveau_scolaires'] = CategorieNiveauScolaire::all();
         
 
@@ -112,13 +114,22 @@ class ClasseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(NiveauScolaire $niveau_scolaire)
+    public function edit(Classe $classe, CycleScolaire $cycle_scolaire)
     {   
-        dd('done');
-        $data['niveau_scolaire'] = $niveau_scolaire;
-        $data['categories'] = CategorieNiveauScolaire::orderBy('id','ASC')->get();
+        $data['classe_niveau'] = Classe::select('classes.*','niveau_scolaires.*','cycle_scolaires.*','classes.id as id_classe','cycle_scolaires.id as id_cycle_scolaire','niveau_scolaires.id as id_niveau_scolaire','classes.created_at as date_creation_classe','classes.updated_at as date_modif_classe')
+                            ->where('classe_niveau_cycles.cycle_scolaire_id',$cycle_scolaire->id)
+                            ->where('classe_niveau_cycles.classe_id',$classe->id)
+                            ->join('classe_niveau_cycles','classe_niveau_cycles.classe_id','classes.id','left')
+                            ->join('niveau_scolaires','niveau_scolaires.id','classe_niveau_cycles.niveau_scolaire_id','left')
+                            ->join('cycle_scolaires','cycle_scolaires.id','classe_niveau_cycles.cycle_scolaire_id','left')
+                            ->first();
 
-        return view('administration.niveau_scolaire.edit',$data);
+        $data['classe'] = $classe;
+        $data['cycle_scolaire'] = $cycle_scolaire;
+        $data['niveau_scolaires'] = NiveauScolaire::all();
+        $data['categorie_niveau_scolaires'] = CategorieNiveauScolaire::all();
+
+        return view('administration.classe.edit',$data);
     }
 
     /**
@@ -128,12 +139,11 @@ class ClasseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, NiveauScolaire $niveau_scolaire)
+    public function update(Request $request, Classe $classe , CycleScolaire $cycle_scolaire)
     {
-        dd('done');
         $validator = Validator::make($request->all(), [
-            'nom_niveau_scolaire' => 'required|string|min:3|unique:niveau_scolaires,nom_niveau_scolaire,'.$niveau_scolaire->id,
-            'categorie' => 'required|exists:categorie_niveau_scolaires,id',
+            'niveau' => 'required|numeric|exists:niveau_scolaires,id',
+            'nom' => 'required|string|unique:classes,nom_classe,'.$classe->id,
         ]);
 
         if ($validator->fails()) {
@@ -144,12 +154,25 @@ class ClasseController extends Controller
 
 
         if ($request->isMethod('put')) {
-            $niveau_scolaire->nom_niveau_scolaire = $request->nom_niveau_scolaire;
-            $niveau_scolaire->categorie_niveau = $request->categorie;
-            $niveau_scolaire->admin_id = Auth::id();
+            
+            $classe_niveau_cycle = ClasseNiveauCycle::where('classe_id',$classe->id)
+                                                    ->where('cycle_scolaire_id',$cycle_scolaire->id)
+                                                    ->first();
 
-            $niveau_scolaire->update(); 
-            return redirect()->route('niveau_scolaire.index')->with('success', 'Enregistrement effectué');
+
+            $classe->nom_classe = $request->nom;
+            
+            $classe->update();
+            
+            
+            $classe_niveau_cycle->classe_id = $classe->id;
+            $classe_niveau_cycle->niveau_scolaire_id = $request->niveau;
+
+            $classe_niveau_cycle->update();
+
+            $data['cycle_scolaire'] = $cycle_scolaire;
+
+            return redirect()->route('cycle.classe.index',$data)->with('success', 'Modification effectué');
         }
     }
 
@@ -159,11 +182,55 @@ class ClasseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(NiveauScolaire $niveau_scolaire)
+    public function destroy(Classe $classe , CycleScolaire $cycle_scolaire)
     {       
-        dd('done'); 
-        if($niveau_scolaire->delete()){
-            return redirect()->route('niveau_scolaire.index')->with('success', 'Suppression effectuée');
+        $classe_niveau_cycle = ClasseNiveauCycle::where('classe_id',$classe->id)
+                                                    ->where('cycle_scolaire_id',$cycle_scolaire->id)
+                                                    ->first();
+        if($classe_niveau_cycle->delete()){
+            return redirect()->route('cycle.classe.index',$cycle_scolaire)->with('success', 'Suppression effectuée');
         }
+    }
+
+    public function liste_classe_cycle(CycleScolaire $cycle_scolaire,CycleScolaire $cycle){
+        $data['cycle_scolaire'] = $cycle_scolaire;
+        $data['classe_cycle'] = ClasseNiveauCycle::select('classe_niveau_cycles.*','classes.*','niveau_scolaires.*','cycle_scolaires.*','classe_niveau_cycles.id as id_classe_cycle','classes.id as id_classe','cycle_scolaires.id as id_cycle_scolaire','niveau_scolaires.id as id_niveau_scolaire')
+                                                ->where('classe_niveau_cycles.cycle_scolaire_id',$cycle->id)
+                                                ->join('classes','classes.id','classe_niveau_cycles.classe_id','left')
+                                                ->join('niveau_scolaires','niveau_scolaires.id','classe_niveau_cycles.niveau_scolaire_id','left')
+                                                ->join('cycle_scolaires','cycle_scolaires.id','classe_niveau_cycles.cycle_scolaire_id','left')
+                                                ->get();
+
+        return view('administration.classe.classe_cycle',$data);
+    }
+
+    public function classe_cycle(Request $request, CycleScolaire $cycle_scolaire){
+        $data['cycle_scolaire'] = $cycle_scolaire;
+        $classes = $request->get('ids');
+        
+        if($classes){
+            foreach ($classes as $classe) {
+                $classe_cycle = ClasseNiveauCycle::where('classe_niveau_cycles.id',$classe)->first();
+                
+                $new_classe_cycle = new ClasseNiveauCycle() ;
+
+                $new_classe_cycle->classe_id = $classe_cycle->classe_id;
+                $new_classe_cycle->niveau_scolaire_id = $classe_cycle->niveau_scolaire_id;
+                $new_classe_cycle->cycle_scolaire_id = $cycle_scolaire->id;
+                $new_classe_cycle->admin_id = Auth::id();
+                
+                try {
+                    $new_classe_cycle->save();
+                } catch (\Illuminate\Database\QueryException $e) {
+                    $errorCode = $e->errorInfo[1];
+                    if($errorCode == 1062){
+                        return redirect()->route('cycle.classe.classe_cycle.index',$cycle_scolaire)->with('error', 'Une erreur s\'est produite');
+                    }
+                }
+            }
+        }else{
+            return redirect()->back()->with('error','Vous n\'avez rien selectionné');
+        }
+        return redirect()->route('cycle.classe.index',$data)->with('success', 'Modification effectué');
     }
 }

@@ -24,6 +24,14 @@ Route::prefix('admin')->group(function (){
     Route::get('/login', 'Administration\Auth\AdminLoginController@showLoginForm')->name('admin.login');
     Route::post('/login', 'Administration\Auth\AdminLoginController@login')->name('admin.login.submit');
     Route::post('/logout', 'Administration\Auth\AdminLoginController@adminLogout')->name('admin.logout');
+
+//utilisateur
+    Route::resource('utilisateur', 'Administration\UtilisateurController');
+
+// Erreur user
+     Route::get('erreur', function () {
+        return view('administration.utilisateur.user_error');
+    })->name('utilisateur.user_error');
     
 //compte
     Route::get('compte', 'Administration\CompteController@index')->name('admin.compte.index');
@@ -37,12 +45,14 @@ Route::prefix('admin')->group(function (){
         Route::prefix('gerer_cycle')->group(function (){
             //classe
             Route::prefix('classe')->group(function (){
-                Route::get('/{cycle_scolaire}','Administration\ClasseController@index')->name('cycle.classe.index');
-                Route::get('/create/{cycle_scolaire}','Administration\ClasseController@create')->name('cycle.classe.create');
-                Route::post('/{cycle_scolaire}','Administration\ClasseController@store')->name('cycle.classe.store');
-                Route::get('/{classe}/edit/{cycle_scolaire}','Administration\ClasseController@edit')->name('cycle.classe.edit');
                 Route::put('/{classe}/{cycle_scolaire}','Administration\ClasseController@update')->name('cycle.classe.update');
+                Route::get('/create/{cycle_scolaire}','Administration\ClasseController@create')->name('cycle.classe.create');
+                Route::get('/{classe}/edit/{cycle_scolaire}','Administration\ClasseController@edit')->name('cycle.classe.edit');
                 Route::delete('/{classe}/{cycle_scolaire}','Administration\ClasseController@destroy')->name('cycle.classe.destroy');
+                Route::get('/{cycle_scolaire}','Administration\ClasseController@index')->name('cycle.classe.index');
+                Route::get('/{cycle_scolaire}/classes/{cycle}','Administration\ClasseController@liste_classe_cycle')->name('cycle.classe.classe_cycle.index');
+                Route::post('/{cycle_scolaire}/classes','Administration\ClasseController@classe_cycle')->name('cycle.classe.classe_cycle.store');
+                Route::post('/{cycle_scolaire}','Administration\ClasseController@store')->name('cycle.classe.store');
             });
             
             Route::get('/{cycle_scolaire}','Administration\GererCycleController@index')->name('cycle.dashboard');

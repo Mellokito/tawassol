@@ -91,6 +91,9 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end"
                                     style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
+                                    <a class="dropdown-item" href="{{ route('cycle.dashboard',$cycle_scolaire->id) }}">
+                                        <i class="la la-gear"></i> &nbsp; Gérer
+                                    </a>
                                     <a class="dropdown-item" href="{{route('cycle_scolaire.edit',$cycle_scolaire->id)}}">
                                         <i class="la la-edit"></i> &nbsp; Modifer
                                     </a>

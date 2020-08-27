@@ -1,8 +1,8 @@
 @extends('layouts.admin.app-cycle')
 
 @section('content')
-<!-- BEGIN: Subheader -->
 
+<!-- BEGIN: Subheader -->
 <div class="m-subheader ">
     <div class="d-flex align-items-center">
         <div class="mr-auto">
@@ -12,12 +12,9 @@
                         <i class="m-nav__link-icon la la-home"></i>
                     </a>
                 </li>
-
-
-                <li class="m-nav__separator">-</li>
                 <li class="m-nav__item">
-                    <a href="" class="m-nav__link">
-                        <span class="m-nav__link-text">Classe</span>
+                    <a href="{{ route('matiere.index') }}" class="m-nav__link">
+                        <span class="m-nav__link-text">Classes</span>
                     </a>
                 </li>
                 <li class="m-nav__separator">-</li>
@@ -36,7 +33,10 @@
 
 <!-- END: Subheader -->
 <div class="m-content">
-        @include('shared.errors_succes')
+    @include('shared.errors_succes')
+
+    <form action="{{ route('cycle.classe.classe_cycle.store',$cycle_scolaire) }}" method="POST">
+        @csrf
     <div class="m-portlet m-portlet--mobile">
         <div class="m-portlet__head">
             <div class="m-portlet__head-caption">
@@ -49,75 +49,45 @@
             <div class="m-portlet__head-tools">
                 <ul class="m-portlet__nav">
                     <li class="m-portlet__nav-item">
-                        <a href="{{ route('cycle.classe.create',$cycle_scolaire) }}" class="btn btn-primary m-btn m-btn--pill m-btn--custom m-btn--icon m-btn--air">
-                            <span>
-                                <i class="la la-plus-circle"></i>
-                                <span>Ajouter classe</span>
-                            </span>
-                        </a>
+                        <button type="submit" class="btn btn-primary m-btn m-btn--pill m-btn--custom m-btn--icon m-btn--air">
+                            <i class="la la-plus-check"></i>&nbsp; Enregistrer
+                        </button>
                     </li>
                     <li class="m-portlet__nav-item"></li>
-
                 </ul>
             </div>
         </div>
         <div class="m-portlet__body">
-
-            <!--begin: Datatable -->
             
+            <!--begin: Datatable -->
             <table class="table table-striped- table-bordered table-hover table-checkable" id="list_items" >
                 <thead>
-                    <th>Nom classe</th>
+                    <th><input type="checkbox" class="selectall" /></th>
                     <th>Niveau</th>
-                    <th>Date de création</th>
-                    <th>Date de modification</th>
-                    <th>Actions</th>
+                    <th>Nom</th>
                 </thead>
                 <tbody>
-                    @foreach ($classes as $classe)
+                    @foreach ($classe_cycle as $classe)
                     <tr>
-                        {{-- {{ dd($niveau_scolaire->categorie) }} --}}
+                        {{-- {{ dd($matiere->categorie) }} --}}
                         <td>
-                            {{ $classe->nom_classe }}
+                            <input type="checkbox" class="selectbox" name="ids[]" value="{{ $classe->id_classe_cycle }}">
                         </td>
                         <td>
                             {{ $classe->nom_niveau_scolaire }}
                         </td>
                         <td>
-                            {{ $classe->date_creation_classe }}
+                            {{ $classe->nom_classe }}
                         </td>
-                        <td>
-                            {{ $classe->date_modif_classe }}
-                        </td>
-                        <td style="text-align:center;">
-                            <span class="dropdown">
-                                <a href="#" class="btn m-btn btn-accent m-btn--icon m-btn--icon-only m-btn--pill" data-toggle="dropdown"
-                                    aria-expanded="false">
-                                    <i class="la la-ellipsis-h"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end"
-                                    style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-32px, 27px, 0px);">
-                                    <a class="dropdown-item" href="{{route('cycle.classe.edit',[$classe->id_classe,$cycle_scolaire->id])}}">
-                                        <i class="la la-edit"></i> &nbsp; Modifer
-                                    </a>
-                                                                        
-                                    <form action="{{ route('cycle.classe.destroy', [$classe->id_classe,$cycle_scolaire])}}" method="POST" id="formDelete">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="dropdown-item" onclick="return confirm('Confirmer cette action ?');" type="submit">
-                                            <i class="la la-close"></i> &nbsp; Supprimer
-                                        </button>
-                                    </form>
-                                </div>
-                            </span>
-                        </td>
+                    
+                    
                     </tr>
                     @endforeach
-
                 </tbody>
             </table>
         </div>
     </div>
+    </form>
 
     <!-- END EXAMPLE TABLE PORTLET-->
 </div>
@@ -152,11 +122,29 @@
 	</script>
 @endsection
 
+@section('deleteAll')
+    <script>
+        $('.selectall').click(function(){
+            $('.selectbox').prop('checked', $(this).prop('checked'));
+        });
+
+        $('.selectbox').change(function(){
+            var total = $('.selectbox').length;
+            var number = $('.selectbox:checked').length;
+            if(total == number){
+                $('.selectall').prop('checked', true);
+            }else{
+                $('.selectall').prop('checked', false);
+            }
+        });
+    </script>
+@endsection
+
 <script>
-    var li  = document.getElementById('classe');
+    var li  = document.getElementById('matiere');
     li.setAttribute('class', 'm-menu__item m-menu__item--submenu m-menu__item--open');
 
-    var active  = document.getElementById('index_classe');
+    var active  = document.getElementById('index_matiere');
     active.setAttribute('class', 'm-menu__item m-menu__item--active');
 </script>
 

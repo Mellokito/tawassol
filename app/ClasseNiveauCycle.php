@@ -9,15 +9,15 @@ class ClasseNiveauCycle extends Model
     protected $guarded = [];
 
     public function niveau(){
-        return $this->belongsTo('App\NiveauScolaire');
+        return $this->belongsTo('App\NiveauScolaire','niveau_scolaire_id');
     }
 
     public function cycle(){
-        return $this->belongsTo('App\CycleScolaire');
+        return $this->belongsTo('App\CycleScolaire','cycle_scolaire_id');
     }
 
     public function classe(){
-        return $this->belongsTo('App\Classe');
+        return $this->belongsTo('App\Classe','classe_id');
     }
 
     public function etudiant(){

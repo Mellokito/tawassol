@@ -13,7 +13,7 @@ class CycleScolaire extends Model
     }
 
     public function classe(){
-        return $this->hasMany('App\ClasseNiveauCycle');
+        return $this->hasMany('App\ClasseNiveauCycle','cycle_scolaire_id');
     }
     
 }

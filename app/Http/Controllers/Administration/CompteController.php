@@ -13,6 +13,7 @@ class CompteController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('statutUser');
     }
     /**
      * Display a listing of the resource.
